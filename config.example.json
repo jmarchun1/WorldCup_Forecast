@@ -1,0 +1,143 @@
+{
+  "football_data_api_key": "YOUR_FOOTBALL_DATA_API_KEY",
+  "tournament": "FIFA World Cup 2026",
+  "models": [
+    {
+      "id": "claude-haiku-4-5-20251001",
+      "short": "haiku",
+      "display_name": "Claude Haiku 4.5",
+      "vendor": "anthropic",
+      "tier": "cheap",
+      "sdk": "anthropic",
+      "input_cost_per_million": 1.0,
+      "output_cost_per_million": 5.0
+    },
+    {
+      "id": "claude-sonnet-4-6",
+      "short": "sonnet",
+      "display_name": "Claude Sonnet 4.6",
+      "vendor": "anthropic",
+      "tier": "mid",
+      "sdk": "anthropic",
+      "input_cost_per_million": 3.0,
+      "output_cost_per_million": 15.0
+    },
+    {
+      "id": "claude-opus-4-7",
+      "short": "opus",
+      "display_name": "Claude Opus 4.7",
+      "vendor": "anthropic",
+      "tier": "flagship",
+      "sdk": "anthropic",
+      "input_cost_per_million": 5.0,
+      "output_cost_per_million": 25.0
+    },
+    {
+      "id": "gpt-5-mini",
+      "short": "gpt5mini",
+      "display_name": "GPT-5 Mini",
+      "vendor": "openai",
+      "tier": "cheap",
+      "sdk": "litellm",
+      "input_cost_per_million": 0.25,
+      "output_cost_per_million": 2.0
+    },
+    {
+      "id": "gpt-5.4",
+      "short": "gpt54",
+      "display_name": "GPT-5.4",
+      "vendor": "openai",
+      "tier": "mid",
+      "sdk": "litellm",
+      "input_cost_per_million": 2.5,
+      "output_cost_per_million": 15.0
+    },
+    {
+      "id": "gpt-5",
+      "short": "gpt5",
+      "display_name": "GPT-5",
+      "vendor": "openai",
+      "tier": "flagship",
+      "sdk": "litellm",
+      "input_cost_per_million": 1.25,
+      "output_cost_per_million": 10.0
+    },
+    {
+      "id": "gemini-2.5-flash-lite",
+      "short": "gem25flashlite",
+      "display_name": "Gemini 2.5 Flash Lite",
+      "vendor": "google",
+      "tier": "cheap",
+      "sdk": "litellm",
+      "input_cost_per_million": 0.1,
+      "output_cost_per_million": 0.4
+    },
+    {
+      "id": "gemini-3.1-flash-lite",
+      "short": "gem31flashlite",
+      "display_name": "Gemini 3.1 Flash Lite",
+      "vendor": "google",
+      "tier": "mid-low",
+      "sdk": "litellm",
+      "input_cost_per_million": 0.25,
+      "output_cost_per_million": 1.5
+    },
+    {
+      "id": "gemini-2.5-flash",
+      "short": "gem25flash",
+      "display_name": "Gemini 2.5 Flash",
+      "vendor": "google",
+      "tier": "mid",
+      "sdk": "litellm",
+      "input_cost_per_million": 0.3,
+      "output_cost_per_million": 2.5
+    },
+    {
+      "id": "gemini-2.5-pro",
+      "short": "gem25pro",
+      "display_name": "Gemini 2.5 Pro",
+      "vendor": "google",
+      "tier": "flagship",
+      "sdk": "litellm",
+      "input_cost_per_million": 1.25,
+      "output_cost_per_million": 10.0
+    },
+    {
+      "id": "sonar",
+      "short": "sonar",
+      "display_name": "Perplexity Sonar",
+      "vendor": "perplexity",
+      "tier": "cheap",
+      "sdk": "litellm",
+      "input_cost_per_million": 1.0,
+      "output_cost_per_million": 1.0
+    },
+    {
+      "id": "sonar-pro",
+      "short": "sonarpro",
+      "display_name": "Perplexity Sonar Pro",
+      "vendor": "perplexity",
+      "tier": "mid",
+      "sdk": "litellm",
+      "input_cost_per_million": 3.0,
+      "output_cost_per_million": 15.0
+    }
+  ],
+  "litellm_base_url": "http://localhost:6655/litellm/v1",
+  "sonar_model_id": "sonar",
+  "kalshi_api_key_id": "YOUR_KALSHI_API_KEY_ID",
+  "ev_threshold": 0.05,
+  "draw_prob_threshold": 0.35,
+  "goal_rescale_factor": 1.2,
+  "ev_commit": false,
+  "draw_floor_gap": 0.0,
+  "settings": {
+    "api_call_delay_seconds": 2,
+    "vendor_concurrency": {
+      "anthropic": 3,
+      "openai": 3,
+      "google": 4,
+      "perplexity": 2
+    }
+  }
+}

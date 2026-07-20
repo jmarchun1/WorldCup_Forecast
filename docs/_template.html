@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>⚽ World Cup 2026 — LLM Forecast</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1117;color:#e6edf3;font-family:-apple-system,'Segoe UI',sans-serif;font-size:13px;line-height:1.5}
+.header{background:#161b22;border-bottom:2px solid #f78166;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.header h1{font-size:1.25em;color:#fff;font-weight:700}
+.header h1 span{color:#f78166}
+.header-meta{color:#8b949e;font-size:0.8em;display:flex;align-items:center;gap:10px}
+.kpi-strip{display:flex;gap:10px;padding:12px 24px;flex-wrap:wrap;border-bottom:1px solid #21262d}
+.kpi{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:10px 14px;min-width:110px}
+.kpi-label{color:#8b949e;font-size:.72em;margin-bottom:2px;text-transform:uppercase;letter-spacing:.05em}
+.kpi-value{font-size:1.35em;font-weight:700}
+.kpi-value.g{color:#3fb950}.kpi-value.b{color:#58a6ff}.kpi-value.o{color:#d29922}
+.tabs{display:flex;background:#161b22;border-bottom:1px solid #30363d;padding:0 24px;overflow-x:auto}
+.tab{padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;color:#8b949e;font-weight:500;font-size:.88em;white-space:nowrap;transition:all .15s}
+.tab:hover{color:#e6edf3}.tab.active{color:#58a6ff;border-bottom-color:#58a6ff}
+.tab-content{display:none;padding:16px 24px}.tab-content.active{display:block}
+.day-block{margin-bottom:20px}
+.day-hdr{color:#8b949e;font-size:.82em;font-weight:700;letter-spacing:.08em;padding:10px 0 6px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #21262d;margin-bottom:8px}
+.day-pill{padding:1px 8px;border-radius:10px;font-size:.72em;font-weight:700}
+.pill-today{background:#1a4d2e;color:#3fb950}
+.pill-past{background:#21262d;color:#8b949e}
+.pill-soon{background:#2d1f00;color:#d29922}
+.fixture-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.fc{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:10px 12px;transition:border-color .15s;cursor:default}
+.fc.has-forecast{cursor:pointer}
+.fc.has-forecast:hover{border-color:#58a6ff;background:#161b22}
+.fc.is-scored{border-left:3px solid #3fb950}
+.fc.is-forecast{border-left:3px solid #58a6ff}
+.fc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.stage-badge{background:#21262d;color:#8b949e;font-size:.7em;padding:1px 5px;border-radius:3px;font-weight:600}
+.fc-teams{display:flex;align-items:center;gap:4px;margin:4px 0}
+.team{font-weight:600;font-size:.92em;flex:1}
+.home-t{text-align:left}.away-t{text-align:right}
+.vs{color:#6e7681;font-size:.78em;flex:0 0 auto}
+.act-score{font-size:1.2em;font-weight:700;color:#3fb950;text-align:center;margin:3px 0}
+.cons-score{font-size:1em;font-weight:600;color:#58a6ff;text-align:center;margin:3px 0}
+.cons-lbl{color:#8b949e;font-size:.7em;text-align:center}
+.odds-row{display:flex;justify-content:space-around;color:#6e7681;font-size:.75em;margin:3px 0}
+.vb-tag{display:inline-block;background:#1a4d2e;color:#3fb950;padding:1px 5px;border-radius:3px;font-size:.7em;font-weight:700;margin:2px 1px 0}
+.venue{color:#6e7681;font-size:.7em;margin-top:4px}
+.fc-hint{color:#30363d;font-size:.68em;margin-top:5px;text-align:right}
+.fc.has-forecast:hover .fc-hint{color:#58a6ff}
+.status-dot{font-size:.65em}
+.sd-scored{color:#3fb950}.sd-fcst{color:#58a6ff}.sd-none{color:#30363d}
+.tbl{width:100%;border-collapse:collapse;margin-top:6px}
+.tbl th{background:#161b22;color:#8b949e;font-weight:600;padding:6px 10px;text-align:left;border-bottom:1px solid #30363d;font-size:.76em;letter-spacing:.04em;white-space:nowrap}
+.tbl td{padding:5px 10px;border-bottom:1px solid #161b22;vertical-align:middle}
+.tbl tr:hover td{background:#161b22}
+.pts4{color:#3fb950;font-weight:700}.pts2{color:#58a6ff}.pts1{color:#d29922}.pts0{color:#6e7681}
+.ev-p{color:#3fb950;font-weight:600}.ev-n{color:#6e7681}
+.bar-wrap{display:flex;align-items:center;gap:6px}
+.pts-bar{height:7px;background:linear-gradient(90deg,#3fb950,#58a6ff);border-radius:3px;min-width:3px}
+.pts-val{font-weight:700;color:#3fb950;min-width:24px}
+.model-nm{font-weight:700}
+.mc{background:#161b22;border:1px solid #21262d;border-radius:8px;margin-bottom:10px;overflow:hidden}
+.mc-hdr{display:flex;align-items:center;gap:12px;padding:8px 12px;background:#0d1117;border-bottom:1px solid #21262d}
+.mc-title{font-weight:700;flex:1}
+.mc-score{font-size:1.05em;font-weight:700;color:#3fb950}
+.mc-date{color:#8b949e;font-size:.78em}
+.inner-tbl{width:100%;border-collapse:collapse}
+.inner-tbl th{background:#161b22;color:#8b949e;font-size:.72em;padding:4px 8px;text-align:left;border-bottom:1px solid #21262d}
+.inner-tbl td{padding:4px 8px;border-bottom:1px solid #0d1117;font-size:.85em}
+.rsn{color:#8b949e;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.empty{color:#6e7681;padding:32px;text-align:center;font-style:italic;background:#161b22;border-radius:8px;margin:8px 0}
+.note{color:#8b949e;font-size:.8em;margin-bottom:8px}
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:flex-start;justify-content:center;padding:32px 16px;overflow-y:auto}
+.modal-bg.open{display:flex}
+.modal{background:#161b22;border:1px solid #30363d;border-radius:12px;width:100%;max-width:900px;overflow:hidden;position:relative}
+.modal-hdr{background:#0d1117;border-bottom:1px solid #30363d;padding:16px 20px;display:flex;align-items:flex-start;gap:16px}
+.modal-close{background:none;border:none;color:#8b949e;font-size:1.3em;cursor:pointer;line-height:1;margin-left:auto;padding:0 4px}
+.modal-close:hover{color:#e6edf3}
+.modal-body{padding:20px}
+.oracle-box{background:#0d1f3a;border:1px solid #1f6feb;border-radius:8px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.oracle-verdict{font-size:1.3em;font-weight:700;color:#58a6ff}
+.oracle-sub{color:#8b949e;font-size:.82em;margin-top:3px}
+.prob-pills{display:flex;gap:8px;flex-wrap:wrap}
+.prob-pill{padding:4px 10px;border-radius:20px;font-size:.82em;font-weight:700}
+.pp-h{background:#1a4d2e;color:#3fb950}
+.pp-d{background:#2d2500;color:#d29922}
+.pp-a{background:#3d1a1a;color:#f78166}
+.vote-bar-wrap{margin-bottom:16px}
+.vote-bar-label{color:#8b949e;font-size:.75em;margin-bottom:6px}
+.vote-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:.82em}
+.vote-bar-score{min-width:40px;font-weight:700;color:#e6edf3}
+.vote-bar-track{flex:1;background:#21262d;border-radius:3px;height:12px;overflow:hidden}
+.vote-bar-fill{height:100%;border-radius:3px;background:#58a6ff;transition:width .3s}
+.vote-bar-fill.is-mode{background:#3fb950}
+.vote-bar-count{min-width:24px;color:#8b949e}
+.model-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:8px}
+.model-card{background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px}
+.model-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.model-card-name{font-weight:700;font-size:.92em}
+.model-card-score{font-size:1.15em;font-weight:700;color:#58a6ff}
+.conf-bar-wrap{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.conf-bar-track{flex:1;background:#21262d;border-radius:3px;height:6px}
+.conf-bar-fill{height:100%;border-radius:3px}
+.conf-label{font-size:.72em;color:#8b949e;min-width:28px}
+.prob-row{display:flex;gap:4px;margin-bottom:8px}
+.prob-seg{flex:1;padding:3px 0;text-align:center;border-radius:4px;font-size:.75em;font-weight:700}
+.ps-h{background:#1a4d2e;color:#3fb950}
+.ps-d{background:#2d2500;color:#d29922}
+.ps-a{background:#3d1a1a;color:#f78166}
+.model-reasoning{color:#8b949e;font-size:.78em;line-height:1.5;border-top:1px solid #21262d;padding-top:7px;margin-top:2px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⚽ World Cup 2026 — <span>LLM Forecast</span></h1>
+  <div class="header-meta">
+    <span>12 models &nbsp;·&nbsp; 72 group stage matches &nbsp;·&nbsp; 4/2/1/1 scoring</span>
+    <span id="build-time"></span>
+    <button onclick="openMethodology()" style="background:#21262d;border:1px solid #30363d;color:#8b949e;border-radius:6px;padding:3px 10px;font-size:.78em;cursor:pointer;font-family:inherit">📐 Methodology</button>
+  </div>
+</div>
+
+<div class="kpi-strip">
+  <div class="kpi"><div class="kpi-label">Matches Scored</div><div class="kpi-value g" id="kpi-scored">—</div></div>
+  <div class="kpi"><div class="kpi-label">Forecasts Ready</div><div class="kpi-value b" id="kpi-forecasts">—</div></div>
+  <div class="kpi"><div class="kpi-label">Exact Scores ⭐</div><div class="kpi-value o" id="kpi-exact">—</div></div>
+  <div class="kpi"><div class="kpi-label">Total Cost</div><div class="kpi-value" id="kpi-cost">—</div></div>
+  <div class="kpi"><div class="kpi-label">Leading Model</div><div class="kpi-value b" id="kpi-leader">—</div></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" id="tab-schedule" onclick="showTab('schedule',this)">📅 Schedule</div>
+  <div class="tab" onclick="showTab('leaderboard',this)">🏆 Leaderboard</div>
+  <div class="tab" onclick="showTab('ev',this)">📊 EV Picks</div>
+  <div class="tab" onclick="showTab('log',this)">📋 Match Log</div>
+  <div class="tab" onclick="showTab('accuracy',this)">🎯 Model Accuracy</div>
+  <div class="tab" onclick="showTab('bonus',this)">🎯 Bonus Questions</div>
+</div>
+
+<div id="schedule" class="tab-content active"></div>
+<div id="leaderboard" class="tab-content"></div>
+<div id="ev" class="tab-content"></div>
+<div id="log" class="tab-content"></div>
+<div id="accuracy" class="tab-content"></div>
+<div id="bonus" class="tab-content"></div>
+
+<!-- Methodology modal -->
+<div class="modal-bg" id="method-modal-bg" onclick="if(event.target===this)closeMethodology()">
+  <div class="modal" style="max-width:760px">
+    <div class="modal-hdr">
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:1.05em;color:#e6edf3">📐 Methodology &amp; Calculations</div>
+        <div style="color:#8b949e;font-size:.8em;margin-top:2px">How forecasts, scoring, and Brier are computed</div>
+      </div>
+      <button class="modal-close" onclick="closeMethodology()">✕</button>
+    </div>
+    <div class="modal-body" style="max-height:80vh;overflow-y:auto;line-height:1.7">
+
+      <div style="color:#8b949e;font-size:.82em;margin-bottom:20px">
+        This dashboard runs 12 large language models against every World Cup 2026 group stage match.
+        Each model receives a structured prompt including historical base rates, team injury data, style ratings,
+        real-time match context, and prediction market implied probabilities. Models output a predicted scoreline,
+        three outcome probabilities (home win / draw / away win), and a confidence score.
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div style="font-weight:700;color:#58a6ff;margin-bottom:8px;font-size:.92em;border-bottom:1px solid #21262d;padding-bottom:4px">FANTASY POINTS (4/2/1/1 system)</div>
+        <table style="width:100%;border-collapse:collapse;font-size:.83em">
+          <tr style="background:#161b22"><th style="padding:5px 10px;text-align:left;color:#8b949e;font-weight:600;border-bottom:1px solid #30363d">Points</th><th style="padding:5px 10px;text-align:left;color:#8b949e;font-weight:600;border-bottom:1px solid #30363d">Condition</th><th style="padding:5px 10px;text-align:left;color:#8b949e;font-weight:600;border-bottom:1px solid #30363d">Example</th></tr>
+          <tr><td style="padding:5px 10px;color:#3fb950;font-weight:700;border-bottom:1px solid #21262d">4 pts</td><td style="padding:5px 10px;border-bottom:1px solid #21262d">Exact scoreline (both goals correct)</td><td style="padding:5px 10px;color:#8b949e;border-bottom:1px solid #21262d">Predicted 2-1, actual 2-1</td></tr>
+          <tr style="background:#161b22"><td style="padding:5px 10px;color:#58a6ff;font-weight:700;border-bottom:1px solid #21262d">2 pts</td><td style="padding:5px 10px;border-bottom:1px solid #21262d">Correct result + exact goal difference (non-draws only)</td><td style="padding:5px 10px;color:#8b949e;border-bottom:1px solid #21262d">Predicted 3-1, actual 2-0 (both home wins, GD=2)</td></tr>
+          <tr><td style="padding:5px 10px;color:#d29922;font-weight:700;border-bottom:1px solid #21262d">1 pt</td><td style="padding:5px 10px;border-bottom:1px solid #21262d">Correct result only, or correct draw (wrong score)</td><td style="padding:5px 10px;color:#8b949e;border-bottom:1px solid #21262d">Predicted 1-0, actual 3-0; or predicted 0-0, actual 1-1</td></tr>
+          <tr style="background:#161b22"><td style="padding:5px 10px;color:#6e7681;font-weight:700">0 pts</td><td style="padding:5px 10px">Wrong result</td><td style="padding:5px 10px;color:#8b949e">Predicted home win, actual away win</td></tr>
+        </table>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div style="font-weight:700;color:#58a6ff;margin-bottom:8px;font-size:.92em;border-bottom:1px solid #21262d;padding-bottom:4px">BRIER SCORE (probability calibration)</div>
+        <div style="background:#0d1117;border-radius:6px;padding:12px 14px;font-family:monospace;font-size:.85em;color:#e6edf3;margin-bottom:8px">
+          Brier = (p<sub>home</sub> − I<sub>home</sub>)² + (p<sub>draw</sub> − I<sub>draw</sub>)² + (p<sub>away</sub> − I<sub>away</sub>)²
+        </div>
+        <div style="color:#8b949e;font-size:.82em">
+          Where <strong style="color:#e6edf3">p</strong> is the model's predicted probability and <strong style="color:#e6edf3">I</strong> is 1 if that outcome occurred, 0 otherwise.
+          This is the <em>undivided</em> multi-class Brier score (range 0–2.0), matching the convention used in football forecasting literature (e.g. onthepitch.now).
+        </div>
+        <div style="margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:.82em">
+          <div style="background:#161b22;border-radius:6px;padding:8px 10px;text-align:center">
+            <div style="color:#3fb950;font-weight:700;font-size:1.1em">0.000</div>
+            <div style="color:#8b949e">Perfect — 100% on correct outcome</div>
+          </div>
+          <div style="background:#161b22;border-radius:6px;padding:8px 10px;text-align:center">
+            <div style="color:#d29922;font-weight:700;font-size:1.1em">0.667</div>
+            <div style="color:#8b949e">Random baseline (⅓ each outcome)</div>
+          </div>
+          <div style="background:#161b22;border-radius:6px;padding:8px 10px;text-align:center">
+            <div style="color:#f78166;font-weight:700;font-size:1.1em">2.000</div>
+            <div style="color:#8b949e">Worst — 100% on wrong outcome</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;color:#8b949e;font-size:.8em">
+          <strong style="color:#e6edf3">Worked example:</strong> Model predicts home win 50%, draw 30%, away win 20%. Actual: draw.<br>
+          Brier = (0.50−0)² + (0.30−1)² + (0.20−0)² = 0.25 + 0.49 + 0.04 = <strong style="color:#d29922">0.780</strong>
+        </div>
+        <div style="margin-top:8px;color:#8b949e;font-size:.8em">
+          <strong style="color:#e6edf3">Benchmark:</strong> onthepitch.now (Elo + Dixon-Coles + Poisson, no market prior) scores <strong style="color:#58a6ff">0.572</strong> on this tournament.
+          Our ensemble (with prediction market odds in prompt) scores approximately <strong style="color:#3fb950">0.494</strong>.
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div style="font-weight:700;color:#58a6ff;margin-bottom:8px;font-size:.92em;border-bottom:1px solid #21262d;padding-bottom:4px">ENSEMBLE &amp; BAYESIAN WEIGHTING</div>
+        <div style="color:#8b949e;font-size:.82em">
+          The consensus prediction is a Bayesian-weighted average across all 12 models.
+          Model weights are updated after each scored match based on cumulative Brier score — models with better calibration
+          receive higher weight in subsequent ensembles. Weights are stored in <code style="color:#e6edf3">model_weights.json</code>
+          and rebuilt after each scoring run.
+          Scoreline votes (e.g. "8/12 models predict 1-1") use equal weights.
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div style="font-weight:700;color:#58a6ff;margin-bottom:8px;font-size:.92em;border-bottom:1px solid #21262d;padding-bottom:4px">EXPECTED VALUE (EV)</div>
+        <div style="color:#8b949e;font-size:.82em;margin-bottom:6px">
+          EV measures whether a model's probability implies edge over the prediction market price.
+        </div>
+        <div style="background:#0d1117;border-radius:6px;padding:10px 14px;font-family:monospace;font-size:.85em;color:#e6edf3;margin-bottom:6px">
+          EV = p_model × (decimal_odds − 1) − (1 − p_model)
+        </div>
+        <div style="color:#8b949e;font-size:.82em">
+          Positive EV means the model believes the outcome is more likely than the market implies.
+          A value bet is flagged when EV &gt; 0.05 on any outcome.
+          Market odds are vig-removed implied probabilities sourced from prediction markets.
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div style="font-weight:700;color:#58a6ff;margin-bottom:8px;font-size:.92em;border-bottom:1px solid #21262d;padding-bottom:4px">MODELS USED</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px;font-size:.82em">
+          <div style="background:#161b22;border-radius:5px;padding:6px 10px"><span style="color:#3fb950">●</span> <strong>Gemini 2.5 Pro</strong> <span style="color:#8b949e">Google · ~$0.033/call</span></div>
+          <div style="background:#161b22;border-radius:5px;padding:6px 10px"><span style="color:#3fb950">●</span> <strong>Gemini 2.5 Flash</strong> <span style="color:#8b949e">Google · ~$0.008/call</span></div>
+          <div style="background:#161b22;border-radius:5px;padding:6px 10px"><span style="color:#3fb950">●</span> <strong>Gemini 2.5 Flash-Lite</strong> <span style="color:#8b949e">Google · ~$0.001/call</span></div>
+          <div style="background:#161b22;border-radius:5px;padding:6px 10px"><span style="color:#3fb950">●</span> <strong>Gemini 3.1 Flash-Lite</strong> <span style="color:#8b949e">Google · ~$0.001/call</span></div>
+          <div style="background:#58a6ff;border-radius:5px;padding:6px 10px;background:#0d1f3a"><span style="color:#58a6ff">●</span> <strong>GPT-5</strong> <span style="color:#8b949e">OpenAI · ~$0.016/call</span></div>
+          <div style="background:#0d1f3a;border-radius:5px;padding:6px 10px"><span style="color:#58a6ff">●</span> <strong>GPT-4o</strong> <span style="color:#8b949e">OpenAI · ~$0.010/call</span></div>
+          <div style="background:#0d1f3a;border-radius:5px;padding:6px 10px"><span style="color:#58a6ff">●</span> <strong>GPT-4o mini</strong> <span style="color:#8b949e">OpenAI · ~$0.002/call</span></div>
+          <div style="background:#1a0d2e;border-radius:5px;padding:6px 10px"><span style="color:#d29922">●</span> <strong>Claude Opus</strong> <span style="color:#8b949e">Anthropic · ~$0.031/call</span></div>
+          <div style="background:#1a0d2e;border-radius:5px;padding:6px 10px"><span style="color:#d29922">●</span> <strong>Claude Sonnet</strong> <span style="color:#8b949e">Anthropic · ~$0.015/call</span></div>
+          <div style="background:#1a0d2e;border-radius:5px;padding:6px 10px"><span style="color:#d29922">●</span> <strong>Claude Haiku</strong> <span style="color:#8b949e">Anthropic · ~$0.005/call</span></div>
+          <div style="background:#161b22;border-radius:5px;padding:6px 10px"><span style="color:#f78166">●</span> <strong>Sonar</strong> <span style="color:#8b949e">Perplexity · ~$0.003/call</span></div>
+          <div style="background:#161b22;border-radius:5px;padding:6px 10px"><span style="color:#f78166">●</span> <strong>Sonar Pro</strong> <span style="color:#8b949e">Perplexity · ~$0.012/call</span></div>
+        </div>
+        <div style="margin-top:8px;color:#8b949e;font-size:.78em">
+          ⚠ Sonar and Sonar Pro have real-time web search capability. Forecasts generated after match kickoff are excluded from scoring to prevent result contamination.
+        </div>
+      </div>
+
+      <div style="margin-bottom:8px">
+        <div style="font-weight:700;color:#58a6ff;margin-bottom:8px;font-size:.92em;border-bottom:1px solid #21262d;padding-bottom:4px">A/B RESEARCH CONDITION</div>
+        <div style="color:#8b949e;font-size:.82em">
+          A parallel set of forecasts (<code style="color:#e6edf3">forecasts_research/</code>) are run on the same matches with prediction market odds <em>removed</em> from the prompt.
+          Comparing Brier scores between Condition A (with odds) and Condition B (no odds) measures how much of LLM forecasting accuracy
+          comes from the market prior vs genuine LLM reasoning — the central question of the accompanying research paper.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Match detail modal -->
+<div class="modal-bg" id="modal-bg" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-hdr" id="modal-hdr">
+      <div style="flex:1"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// Data injected by push_to_pages.py
+const FIXTURES = __FIXTURES_JSON__;
+const FORECASTS = __FORECASTS_JSON__;
+const SCORED = __SCORED_JSON__;
+const CONSENSUS = __CONSENSUS_JSON__;
+const BONUS = __BONUS_JSON__;
+const BONUS_MODELS = __BONUS_MODELS_JSON__;
+const ACCURACY_STATS = __ACCURACY_STATS_JSON__;
+const VERSION_HISTORY = __VERSION_HISTORY_JSON__;
+const CROSS_VERSION = __CROSS_VERSION_JSON__;
+const MARKET_BENCHMARK = __MARKET_BENCHMARK_JSON__;
+const BUILD_TIME = "__BUILD_TIME__";
+
+document.getElementById('build-time').textContent = 'Built: ' + BUILD_TIME;
+
+const FLAGS = {
+  "Mexico":"🇲🇽","South Africa":"🇿🇦","South Korea":"🇰🇷","Czech Republic":"🇨🇿",
+  "Canada":"🇨🇦","Switzerland":"🇨🇭","Qatar":"🇶🇦","Bosnia & Herzegovina":"🇧🇦",
+  "Brazil":"🇧🇷","Morocco":"🇲🇦","Scotland":"🏴󠁧󠁢󠁳󠁣󠁴󠁿","Haiti":"🇭🇹",
+  "USA":"🇺🇸","Paraguay":"🇵🇾","Turkey":"🇹🇷","Australia":"🇦🇺",
+  "Germany":"🇩🇪","Curacao":"🇨🇼","Ivory Coast":"🇨🇮","Ecuador":"🇪🇨",
+  "Netherlands":"🇳🇱","Japan":"🇯🇵","Sweden":"🇸🇪","Tunisia":"🇹🇳",
+  "Belgium":"🇧🇪","Egypt":"🇪🇬","Iran":"🇮🇷","New Zealand":"🇳🇿",
+  "Spain":"🇪🇸","Cape Verde":"🇨🇻","Saudi Arabia":"🇸🇦","Uruguay":"🇺🇾",
+  "France":"🇫🇷","Senegal":"🇸🇳","Iraq":"🇮🇶","Norway":"🇳🇴",
+  "Argentina":"🇦🇷","Algeria":"🇩🇿","Austria":"🇦🇹","Jordan":"🇯🇴",
+  "Portugal":"🇵🇹","DR Congo":"🇨🇩","Uzbekistan":"🇺🇿","Colombia":"🇨🇴",
+  "England":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Croatia":"🇭🇷","Panama":"🇵🇦","Ghana":"🇬🇭",
+};
+function flag(t){return FLAGS[t]||"🏳";}
+function safe(s){return s.replace(/ /g,'_').replace(/'/g,'').replace(/\//g,'').replace(/&/g,'and');}
+function matchId(h,a,d){return safe(h)+'_'+safe(a)+'_'+d;}
+function pct(v){return Math.round(v*100)+'%';}
+function evSpan(v){
+  if(v==null)return'—';
+  return`<span class="${v>0?'ev-p':'ev-n'}">${v>0?'+':''}${v.toFixed(3)}</span>`;
+}
+function ptsCls(p){return{4:'pts4',2:'pts2',1:'pts1',0:'pts0'}[p]||'pts0';}
+function showTab(id,el){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+}
+
+// Build indexes
+const scoredByMatch={}, actualByMatch={}, consByMatch={}, forecastMids=new Set();
+SCORED.forEach(r=>{if(!scoredByMatch[r.match_id])scoredByMatch[r.match_id]=[];scoredByMatch[r.match_id].push(r);});
+Object.entries(scoredByMatch).forEach(([mid,recs])=>{actualByMatch[mid]=recs[0];});
+CONSENSUS.forEach(c=>{consByMatch[c.match_id]=c;});
+FORECASTS.forEach(f=>{forecastMids.add(f.match_id);});
+
+// Filter out tainted Sonar/SonarPro records (forecast on or after match date)
+const WEB_SEARCH_MODELS=new Set(['sonar','sonarpro']);
+function isTainted(r){
+  if(!WEB_SEARCH_MODELS.has(r.model_short))return false;
+  const fd=r.forecast_date||'', md=(r.match_id||'').slice(-10);
+  return fd&&md&&fd>=md;
+}
+const SCORED_CLEAN=SCORED.filter(r=>!isTainted(r));
+
+// KPIs
+const scoredMids=new Set(Object.keys(scoredByMatch));
+const nTotal=FIXTURES.length||72;
+document.getElementById('kpi-scored').textContent=scoredMids.size+' / '+nTotal;
+document.getElementById('kpi-forecasts').textContent=forecastMids.size;
+document.getElementById('kpi-exact').textContent=SCORED_CLEAN.filter(r=>r.score_breakdown==='exact_score').length+' / '+scoredMids.size;
+// Leading model by total points (once matches are scored)
+(()=>{
+  const pts={};
+  SCORED.forEach(r=>{const k=r.model_short||'?';pts[k]=(pts[k]||0)+(r.points||0);});
+  const sorted=Object.entries(pts).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('kpi-leader').textContent=sorted.length?sorted[0][0]+' ('+sorted[0][1]+'pts)':'TBD';
+})();
+// Cost: sum from FORECASTS (always populated regardless of scoring status)
+const forecastCost=FORECASTS.reduce((a,r)=>a+(r.cost_usd||0),0);
+document.getElementById('kpi-cost').textContent='$'+forecastCost.toFixed(3);
+
+// Build indexes
+
+const forecastsByMatch={};
+FORECASTS.forEach(f=>{if(!forecastsByMatch[f.match_id])forecastsByMatch[f.match_id]=[];forecastsByMatch[f.match_id].push(f);});
+
+// Modal
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('modal-bg'))return;
+  document.getElementById('modal-bg').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeMethodology();}});
+
+function openMethodology(){
+  document.getElementById('method-modal-bg').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeMethodology(){
+  document.getElementById('method-modal-bg').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function openMatchModal(mid,home,away,venue,stage,date){
+  const recs=(forecastsByMatch[mid]||[]).sort((a,b)=>(b.confidence||0)-(a.confidence||0));
+  const cons=consByMatch[mid];
+  const actual=actualByMatch[mid];
+
+  // Header
+  const dot=actual?'<span style="color:#3fb950;font-size:.8em">● SCORED</span>':recs.length?'<span style="color:#58a6ff;font-size:.8em">● FORECAST</span>':'';
+  document.getElementById('modal-hdr').innerHTML=`
+    <div>
+      <div style="font-size:1.1em;font-weight:700">${flag(home)} ${home} <span style="color:#6e7681">vs</span> ${away} ${flag(away)}</div>
+      <div style="color:#8b949e;font-size:.82em;margin-top:3px">${stage} &nbsp;·&nbsp; ${date} &nbsp;·&nbsp; ${venue} &nbsp; ${dot}</div>
+      ${actual?`<div style="font-size:1.5em;font-weight:700;color:#3fb950;margin-top:6px">${actual.actual_home} – ${actual.actual_away} <span style="font-size:.55em;color:#8b949e">${(actual.actual_outcome||'').replace(/_/g,' ')}</span></div>`:''}
+    </div>
+    <button class="modal-close" onclick="closeModal()">✕</button>`;
+
+  if(!recs.length){
+    document.getElementById('modal-body').innerHTML='<div class="empty">No forecasts for this match yet.</div>';
+    document.getElementById('modal-bg').classList.add('open');
+    document.body.style.overflow='hidden';
+    return;
+  }
+
+  // Oracle
+  const avgHW=recs.reduce((s,r)=>s+(r.home_win_prob||0),0)/recs.length;
+  const avgD=recs.reduce((s,r)=>s+(r.draw_prob||0),0)/recs.length;
+  const avgAW=recs.reduce((s,r)=>s+(r.away_win_prob||0),0)/recs.length;
+  const oracleTxt=avgHW>=avgD&&avgHW>=avgAW?`${flag(home)} ${home} to win`:avgAW>avgHW&&avgAW>avgD?`${flag(away)} ${away} to win`:'Draw';
+  const oracleConf=Math.round(Math.max(avgHW,avgD,avgAW)*100);
+  const consScore=cons?`Consensus score: <strong style="color:#58a6ff">${cons.consensus_home_goals}–${cons.consensus_away_goals}</strong>`:'';
+
+  // Vote distribution
+  let voteHtml='';
+  if(cons&&cons.scoreline_votes){
+    const entries=Object.entries(cons.scoreline_votes).sort((a,b)=>b[1]-a[1]);
+    const maxV=entries[0][1];
+    voteHtml=`<div class="vote-bar-wrap">
+      <div class="vote-bar-label">SCORELINE VOTE DISTRIBUTION</div>`;
+    entries.forEach(([sc,n])=>{
+      const isMod=(sc===`${cons.consensus_home_goals}-${cons.consensus_away_goals}`);
+      voteHtml+=`<div class="vote-bar-row">
+        <span class="vote-bar-score" style="${isMod?'color:#3fb950':''}">${sc}</span>
+        <div class="vote-bar-track"><div class="vote-bar-fill ${isMod?'is-mode':''}" style="width:${Math.round(n/maxV*100)}%"></div></div>
+        <span class="vote-bar-count">${n}/12</span>
+      </div>`;
+    });
+    voteHtml+='</div>';
+  }
+
+  // Odds divergence — show where models differ most from market
+  let oddsHtml='';
+  if(cons){
+    const mktH=cons.implied_home,mktD=cons.implied_draw,mktA=cons.implied_away;
+    if(mktH){
+      const dH=avgHW-mktH, dD=avgD-mktD, dA=avgAW-mktA;
+      const fmt=(v,lbl)=>`<span style="color:${Math.abs(v)>0.05?(v>0?'#3fb950':'#f78166'):'#8b949e'}">${lbl} ${v>0?'+':''}${Math.round(v*100)}pp</span>`;
+      oddsHtml=`<div style="background:#0d1117;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:.82em">
+        <div style="color:#8b949e;font-size:.75em;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Models vs bookmaker (gap in probability points)</div>
+        <div style="display:flex;gap:20px;flex-wrap:wrap">${fmt(dH,home)}&nbsp;&nbsp;${fmt(dD,'Draw')}&nbsp;&nbsp;${fmt(dA,away)}</div>
+        <div style="color:#6e7681;font-size:.75em;margin-top:4px">Market: ${home} ${pct(mktH)} · Draw ${pct(mktD)} · ${away} ${pct(mktA)} &nbsp;|&nbsp; Models: ${home} ${pct(avgHW)} · Draw ${pct(avgD)} · ${away} ${pct(avgAW)}</div>
+      </div>`;
+    }
+  }
+
+  // Model cards
+  let cardsHtml='<div class="model-grid">';
+  recs.forEach(r=>{
+    const conf=r.confidence||0;
+    const confColor=conf>=70?'#3fb950':conf>=50?'#d29922':'#6e7681';
+    const scoredRec=actual?(scoredByMatch[mid]||[]).find(s=>s.model_short===r.model_short):null;
+    const ptsBadge=scoredRec!=null?`<span class="${ptsCls(scoredRec.points||0)}" style="font-size:.72em;padding:1px 5px;border:1px solid currentColor;border-radius:3px;margin-left:6px">${scoredRec.points}pts</span>`:'';
+    cardsHtml+=`<div class="model-card">
+      <div class="model-card-hdr">
+        <span class="model-card-name">${r.model_short||'?'}${ptsBadge}</span>
+        <span class="model-card-score">${r.home_goals??'?'} – ${r.away_goals??'?'}</span>
+      </div>
+      <div class="conf-bar-wrap">
+        <div class="conf-bar-track"><div class="conf-bar-fill" style="width:${conf}%;background:${confColor}"></div></div>
+        <span class="conf-label" style="color:${confColor}">${conf}%</span>
+      </div>
+      <div class="prob-row">
+        <div class="prob-seg ps-h">${home} ${r.home_win_prob!=null?pct(r.home_win_prob):'—'}</div>
+        <div class="prob-seg ps-d">Draw ${r.draw_prob!=null?pct(r.draw_prob):'—'}</div>
+        <div class="prob-seg ps-a">${away} ${r.away_win_prob!=null?pct(r.away_win_prob):'—'}</div>
+      </div>
+      <div class="model-reasoning">${r.reasoning||'No reasoning provided.'}</div>
+    </div>`;
+  });
+  cardsHtml+='</div>';
+
+  document.getElementById('modal-body').innerHTML=`
+    <div class="oracle-box">
+      <div>
+        <div style="font-size:.72em;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">🔮 Oracle verdict</div>
+        <div class="oracle-verdict">${oracleTxt}</div>
+        <div class="oracle-sub">${oracleConf}% model confidence &nbsp;·&nbsp; ${consScore}</div>
+      </div>
+      <div class="prob-pills">
+        <span class="prob-pill pp-h">H ${pct(avgHW)}</span>
+        <span class="prob-pill pp-d">D ${pct(avgD)}</span>
+        <span class="prob-pill pp-a">A ${pct(avgAW)}</span>
+      </div>
+    </div>
+    ${oddsHtml}
+    ${voteHtml}
+    <div style="color:#8b949e;font-size:.75em;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">INDIVIDUAL MODEL FORECASTS (${recs.length}/12)</div>
+    ${cardsHtml}`;
+
+  document.getElementById('modal-bg').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+// Bonus modal
+const bonusModelsByQ={};
+BONUS_MODELS.forEach(r=>{
+  if(!bonusModelsByQ[r.question_id])bonusModelsByQ[r.question_id]=[];
+  bonusModelsByQ[r.question_id].push(r);
+});
+
+function openBonusModal(qid){
+  const LABELS={
+    first_goal_team:'Which team will score the first goal?',
+    most_goals_team:'Which team will score the most goals? (excl. penalty shootout)',
+    tournament_winner:'Which team will win the tournament?',
+    total_red_cards:'How many red cards in total? (yellow-red counts as red)',
+    penalty_shootout_games:'How many games decided by penalty shootout?',
+    total_goals:'How many goals in total? (excl. penalty shootout)',
+    final_goals:'How many goals in the final match?',
+  };
+  const deadlines={
+    first_goal_team:'Thu Jun 11, 11:00',most_goals_team:'Wed Jun 24, 11:00',
+    tournament_winner:'Wed Jun 24, 11:00',total_red_cards:'Sat Jul 04, 09:00',
+    penalty_shootout_games:'Sat Jul 04, 09:00',total_goals:'Sat Jul 04, 09:00',
+    final_goals:'Sat Jul 04, 09:00',
+  };
+  const bonusCons=BONUS.find(b=>b.question_id===qid)||{};
+  const recs=(bonusModelsByQ[qid]||[]).slice().sort((a,b)=>(b.confidence||0)-(a.confidence||0));
+
+  document.getElementById('modal-hdr').innerHTML=`
+    <div>
+      <div style="font-size:1.05em;font-weight:700">${LABELS[qid]||qid}</div>
+      <div style="color:#8b949e;font-size:.82em;margin-top:3px">⏰ Deadline: ${deadlines[qid]||''} &nbsp;·&nbsp; ${recs.length} model forecasts</div>
+    </div>
+    <button class="modal-close" onclick="closeModal()">✕</button>`;
+
+  const cons=bonusCons.consensus_answer||'—';
+  const isTeam=bonusCons.answer_type==='team_name';
+  const consDisplay=isTeam?`${flag(cons)} ${cons}`:cons;
+
+  // Vote bar
+  const voteCount={};
+  (bonusCons.all_answers||[]).forEach(v=>{const k=String(v).trim();voteCount[k]=(voteCount[k]||0)+1;});
+  const sortedVotes=Object.entries(voteCount).sort((a,b)=>b[1]-a[1]);
+  const maxV=sortedVotes[0]?.[1]||1;
+  let voteHtml='<div class="vote-bar-wrap"><div class="vote-bar-label">MODEL VOTE DISTRIBUTION</div>';
+  sortedVotes.forEach(([v,n])=>{
+    const isMod=String(v).trim()===String(cons).trim();
+    voteHtml+=`<div class="vote-bar-row">
+      <span class="vote-bar-score" style="${isMod?'color:#3fb950':''}">${isTeam?flag(v)+' ':''}${v}</span>
+      <div class="vote-bar-track"><div class="vote-bar-fill ${isMod?'is-mode':''}" style="width:${Math.round(n/maxV*100)}%"></div></div>
+      <span class="vote-bar-count">${n}/${recs.length}</span>
+    </div>`;
+  });
+  voteHtml+='</div>';
+
+  // Model cards
+  let cardsHtml='<div class="model-grid">';
+  recs.forEach(r=>{
+    const conf=r.confidence||0;
+    const confColor=conf>=70?'#3fb950':conf>=50?'#d29922':'#6e7681';
+    const isWinner=String(r.answer).trim()===String(cons).trim();
+    cardsHtml+=`<div class="model-card">
+      <div class="model-card-hdr">
+        <span class="model-card-name">${r.model_short||'?'}</span>
+        <span class="model-card-score" style="${isWinner?'color:#3fb950':''}">${isTeam?flag(r.answer)+' ':''}${r.answer||'—'}</span>
+      </div>
+      <div class="conf-bar-wrap">
+        <div class="conf-bar-track"><div class="conf-bar-fill" style="width:${conf}%;background:${confColor}"></div></div>
+        <span class="conf-label" style="color:${confColor}">${conf}%</span>
+      </div>
+      <div class="model-reasoning">${r.reasoning||''}</div>
+      ${r.alternatives?`<div style="color:#6e7681;font-size:.78em;margin-top:5px"><strong style="color:#8b949e">Alternatives:</strong> ${r.alternatives}</div>`:''}
+      ${r.prediction_market_note?`<div style="color:#6e7681;font-size:.78em;margin-top:4px"><strong style="color:#8b949e">Market note:</strong> ${r.prediction_market_note}</div>`:''}
+    </div>`;
+  });
+  cardsHtml+='</div>';
+
+  document.getElementById('modal-body').innerHTML=`
+    <div class="oracle-box">
+      <div>
+        <div style="font-size:.72em;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">🔮 Consensus answer</div>
+        <div class="oracle-verdict">${consDisplay}</div>
+        <div class="oracle-sub">${bonusCons.avg_confidence||0}% avg confidence &nbsp;·&nbsp; ${recs.length}/${recs.length} models</div>
+      </div>
+    </div>
+    ${voteHtml}
+    <div style="color:#8b949e;font-size:.75em;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;margin-top:14px">INDIVIDUAL MODEL FORECASTS (${recs.length})</div>
+    ${cardsHtml}`;
+
+  document.getElementById('modal-bg').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+// Schedule
+(function(){  const today=new Date().toISOString().slice(0,10);
+  const soon=new Date(Date.now()+3*86400000).toISOString().slice(0,10);
+  const byDate={};
+  FIXTURES.forEach(f=>{if(!byDate[f.date])byDate[f.date]=[];byDate[f.date].push(f);});
+  let html='<p class="note">● <span style="color:#3fb950">scored</span> &nbsp; ● <span style="color:#58a6ff">forecast ready</span> &nbsp; ○ upcoming &nbsp;·&nbsp; <em>Click a forecast card to see per-model breakdown</em></p>';
+  Object.keys(byDate).sort().forEach(d=>{
+    const pill=d===today?'<span class="day-pill pill-today">TODAY</span>':d<today?'<span class="day-pill pill-past">PAST</span>':d<=soon?'<span class="day-pill pill-soon">SOON</span>':'';
+    html+=`<div class="day-block"><div class="day-hdr">${d} ${pill}</div><div class="fixture-grid">`;
+    byDate[d].forEach(f=>{
+      const mid=matchId(f.home,f.away,f.date);
+      const hasScore=!!actualByMatch[mid], hasFcst=forecastMids.has(mid);
+      const cons=consByMatch[mid], actual=actualByMatch[mid];
+      let scoreBlock='';
+      if(actual){
+        scoreBlock=`<div class="act-score">${actual.actual_home} – ${actual.actual_away}</div>`;
+      } else if(cons){
+        const votes=cons.scoreline_votes?Object.entries(cons.scoreline_votes).slice(0,3).map(([s,n])=>`${s}×${n}`).join(' '):'';
+        scoreBlock=`<div class="cons-score">${cons.consensus_home_goals} – ${cons.consensus_away_goals}</div><div class="cons-lbl">consensus${votes?' ('+votes+')':''}</div>`;
+      }
+      let vbHtml='';
+      if(cons&&cons.value_bets&&cons.value_bets.length){
+        cons.value_bets.forEach(b=>{vbHtml+=`<span class="vb-tag">EV +${b.ev.toFixed(3)} ${b.outcome.replace(/_/g,' ').toUpperCase()}</span>`;});
+      }
+      const dot=hasScore?'<span class="status-dot sd-scored">●</span>':hasFcst?'<span class="status-dot sd-fcst">●</span>':'<span class="status-dot sd-none">○</span>';
+      const cls=`fc ${hasScore?'is-scored':hasFcst?'is-forecast':''} ${hasFcst||hasScore?'has-forecast':''}`;
+      const clickAttr=hasFcst||hasScore?`onclick="openMatchModal('${mid}','${f.home.replace(/'/g,"\\'")}','${f.away.replace(/'/g,"\\'")}','${f.venue.replace(/'/g,"\\'")}','${f.stage}','${f.date}')"`:'' ;
+      const hint=hasFcst?'<div class="fc-hint">click to explore →</div>':'';
+      html+=`<div class="${cls}" ${clickAttr}>
+  <div class="fc-top"><span class="stage-badge">${f.stage}</span>${dot}</div>
+  <div class="fc-teams"><span class="team home-t">${flag(f.home)} ${f.home}</span><span class="vs">vs</span><span class="team away-t">${f.away} ${flag(f.away)}</span></div>
+  ${scoreBlock}${vbHtml}
+  <div class="venue">${f.venue}</div>${hint}
+</div>`;
+    });
+    html+='</div></div>';
+  });
+  document.getElementById('schedule').innerHTML=html;
+  document.getElementById('tab-schedule').textContent='📅 Schedule ('+FIXTURES.length+')';
+})();
+
+// Leaderboard
+(function(){
+  if(!SCORED_CLEAN.length){document.getElementById('leaderboard').innerHTML='<div class="empty">No scored matches yet — check back after June 11.</div>';return;}
+  const m={};
+  SCORED_CLEAN.forEach(r=>{
+    const k=r.model_short||'?';
+    if(!m[k])m[k]={pts:0,n:0,cost:0,bsum:0,bn:0,exact:0,correct:0};
+    m[k].pts+=r.points||0; m[k].n++; m[k].cost+=r.cost_usd||0;
+    if(r.brier_score!=null){m[k].bsum+=r.brier_score;m[k].bn++;}
+    if(r.score_breakdown==='exact_score')m[k].exact++;
+    if((r.points||0)>0)m[k].correct++;
+  });
+  const baseRows=Object.entries(m).map(([k,d])=>({
+    model:k,pts:d.pts,n:d.n,avg:d.n?+(d.pts/d.n).toFixed(2):0,
+    exact:d.exact,correct:d.correct,cost:d.cost,
+    ppd:d.cost?+(d.pts/d.cost).toFixed(1):null,
+    brier:d.bn?+(d.bsum/d.bn).toFixed(4):null,
+  }));
+  const maxPts=Math.max(...baseRows.map(r=>r.pts),1);
+
+  let sortCol='pts', sortDir=-1;
+  const cols=[
+    {key:'pts',   label:'Points',    def:-1},
+    {key:'avg',   label:'Avg/Match', def:-1},
+    {key:'exact', label:'Exact ⭐',  def:-1},
+    {key:'correct',label:'Correct',  def:-1},
+    {key:'brier', label:'Brier↓',    def:1},
+    {key:'cost',  label:'Cost $',    def:1},
+    {key:'ppd',   label:'Pts/$',     def:-1},
+  ];
+
+  function renderLb(){
+    const rows=[...baseRows].sort((a,b)=>{
+      const av=a[sortCol]??( sortDir>0?Infinity:-Infinity);
+      const bv=b[sortCol]??( sortDir>0?Infinity:-Infinity);
+      return sortDir*(bv-av)||b.pts-a.pts;
+    });
+    const arrow=sortDir>0?' ▲':' ▼';
+    let html=`<table class="tbl" id="lb-tbl"><thead><tr>
+<th style="color:#8b949e">#</th>
+<th style="cursor:default">Model</th>`;
+    cols.forEach(c=>{
+      const active=c.key===sortCol;
+      html+=`<th style="cursor:pointer;user-select:none${active?';color:#58a6ff':''}" onclick="lbSort('${c.key}',${c.def})">${c.label}${active?arrow:' ⇅'}</th>`;
+    });
+    html+=`</tr></thead><tbody>`;
+    rows.forEach((r,i)=>{
+      const bw=Math.round(r.pts/maxPts*100);
+      html+=`<tr>
+<td style="color:#8b949e;font-weight:700">${i+1}</td>
+<td class="model-nm">${r.model}</td>
+<td><div class="bar-wrap"><div class="pts-bar" style="width:${bw}%"></div><span class="pts-val">${r.pts}</span></div></td>
+<td>${r.avg}</td>
+<td class="pts4">${r.exact}</td>
+<td>${r.correct}/${r.n}</td>
+<td>${r.brier??'—'}</td>
+<td>$${r.cost.toFixed(4)}</td>
+<td>${r.ppd??'—'}</td>
+</tr>`;
+    });
+    html+='</tbody></table>';
+    document.getElementById('leaderboard').innerHTML=html;
+  }
+
+  window.lbSort=function(col,defDir){
+    if(sortCol===col){sortDir*=-1;}else{sortCol=col;sortDir=defDir;}
+    renderLb();
+  };
+
+  renderLb();
+})();
+
+// EV Picks
+(function(){
+  if(!CONSENSUS.length){document.getElementById('ev').innerHTML='<div class="empty">EV picks appear once fixtures are fetched and forecasts run.</div>';return;}
+  let html=`<p class="note">Consensus scoreline across all 12 models. Value bet = model probability exceeds bookmaker implied by &gt;5pp.</p><table class="tbl"><thead><tr><th>Match</th><th>Date</th><th>Models</th><th>Consensus</th><th>Votes</th><th>Home%</th><th>Draw%</th><th>Away%</th><th>EV Home</th><th>EV Draw</th><th>EV Away</th><th>Value Bets</th><th>Actual</th></tr></thead><tbody>`;
+  [...CONSENSUS].sort((a,b)=>a.match_date.localeCompare(b.match_date)).forEach(c=>{
+    const actual=actualByMatch[c.match_id];
+    const vbs=c.value_bets||[];
+    const vbHtml=vbs.length?vbs.map(b=>`<span class="vb-tag">+${b.ev.toFixed(3)} ${b.outcome.replace(/_/g,' ').toUpperCase()} @${b.odds}</span>`).join(' '):'<span style="color:#6e7681">—</span>';
+    const actHtml=actual?`<span class="${ptsCls(actual.points)}">${(actual.actual_outcome||'').replace(/_/g,' ').toUpperCase()}</span>`:'—';
+    const votes=c.scoreline_votes?Object.entries(c.scoreline_votes).slice(0,3).map(([s,n])=>`<b>${s}</b>×${n}`).join(' '):'—';
+    html+=`<tr><td><strong>${flag(c.home)} ${c.home}</strong> vs <strong>${c.away} ${flag(c.away)}</strong></td><td>${c.match_date}</td><td>${c.models_included}/12</td><td class="pts4"><strong>${c.consensus_home_goals}–${c.consensus_away_goals}</strong></td><td style="font-size:.8em">${votes}</td><td>${c.avg_home_win_prob!=null?pct(c.avg_home_win_prob):'—'}</td><td>${c.avg_draw_prob!=null?pct(c.avg_draw_prob):'—'}</td><td>${c.avg_away_win_prob!=null?pct(c.avg_away_win_prob):'—'}</td><td>${evSpan(c.ev_home_win)}</td><td>${evSpan(c.ev_draw)}</td><td>${evSpan(c.ev_away_win)}</td><td>${vbHtml}</td><td>${actHtml}</td></tr>`;
+  });
+  html+='</tbody></table>';
+  document.getElementById('ev').innerHTML=html;
+})();
+
+// Match Log
+(function(){
+  if(!SCORED.length){document.getElementById('log').innerHTML='<div class="empty">Match log appears after results are scored.</div>';return;}
+  let html='';
+  Object.keys(scoredByMatch).sort().reverse().forEach(mid=>{
+    const recs=[...scoredByMatch[mid]].sort((a,b)=>(b.points||0)-(a.points||0));
+    const first=recs[0];
+    const parts=mid.split('_');
+    html+=`<div class="mc"><div class="mc-hdr"><span class="mc-title">${parts[0]} vs ${parts[1]}</span><span class="mc-score">${first.actual_home} – ${first.actual_away}</span><span class="mc-date">${first.match_date||''} · <em>${(first.actual_outcome||'').replace(/_/g,' ')}</em></span></div><table class="inner-tbl"><thead><tr><th>Model</th><th>Predicted</th><th>Pts</th><th>Breakdown</th><th>Home%</th><th>Draw%</th><th>Away%</th><th>Brier</th><th>Reasoning</th></tr></thead><tbody>`;
+    recs.forEach(r=>{
+      const p=r.points||0;
+      html+=`<tr><td><strong>${r.model_short||'?'}</strong></td><td>${r.predicted_home??'?'}–${r.predicted_away??'?'}</td><td class="${ptsCls(p)}"><strong>${p}</strong></td><td><small>${r.score_breakdown||''}</small></td><td>${r.home_win_prob!=null?pct(r.home_win_prob):'—'}</td><td>${r.draw_prob!=null?pct(r.draw_prob):'—'}</td><td>${r.away_win_prob!=null?pct(r.away_win_prob):'—'}</td><td>${r.brier_score!=null?r.brier_score.toFixed(4):'—'}</td><td class="rsn">${(r.reasoning||'').slice(0,100)}</td></tr>`;
+    });
+    html+='</tbody></table></div>';
+  });
+  document.getElementById('log').innerHTML=html;
+})();
+
+// Model Accuracy
+(function(){
+  const el=document.getElementById('accuracy');
+
+  // Build per-model cost from FORECASTS (always available, even before scoring)
+  const fcostByModel={};
+  FORECASTS.forEach(r=>{const k=r.model_short||'?';fcostByModel[k]=(fcostByModel[k]||0)+(r.cost_usd||0);});
+
+  if(!SCORED.length){
+    // Show cost-only table when no matches scored yet
+    const costRows=Object.entries(fcostByModel).sort((a,b)=>b[1]-a[1]);
+    const totalC=costRows.reduce((s,[,c])=>s+c,0);
+    let html=`<p class="note" style="margin-bottom:10px">No scored matches yet — showing forecast cost by model. Accuracy metrics appear after June 11.</p>`;
+    html+=`<table class="tbl"><thead><tr><th>Model</th><th>Forecasts</th><th>Cost $</th><th>Cost/Call $</th><th>% of Total</th></tr></thead><tbody>`;
+    costRows.forEach(([k,c])=>{
+      const n=FORECASTS.filter(f=>f.model_short===k).length;
+      html+=`<tr><td class="model-nm">${k}</td><td>${n}</td><td style="color:#8b949e">$${c.toFixed(4)}</td><td>$${n?+(c/n).toFixed(5):0}</td><td>${totalC?+(c/totalC*100).toFixed(1):0}%</td></tr>`;
+    });
+    html+=`<tr style="font-weight:700;border-top:1px solid #30363d"><td colspan="2">TOTAL</td><td style="color:#d29922">$${totalC.toFixed(4)}</td><td>—</td><td>100%</td></tr>`;
+    html+='</tbody></table>';
+    el.innerHTML=html;
+    return;
+  }
+
+  // Per-model stats
+  const m={};
+  SCORED_CLEAN.forEach(r=>{
+    const k=r.model_short||'?';
+    if(!m[k])m[k]={pts:0,n:0,exact:0,correct:0,wrong:0,bsum:0,bn:0,
+                    ev_bets:0,ev_correct:0,cost:0,
+                    by_breakdown:{exact_score:0,correct_result_exact_gd:0,correct_result:0,correct_draw:0,wrong_result:0}};
+    m[k].pts+=r.points||0; m[k].n++; m[k].cost+=r.cost_usd||0;
+    if(r.brier_score!=null){m[k].bsum+=r.brier_score;m[k].bn++;}
+    const bd=r.score_breakdown||'wrong_result';
+    if(m[k].by_breakdown[bd]!==undefined)m[k].by_breakdown[bd]++;
+    if(bd==='exact_score')m[k].exact++;
+    if((r.points||0)>0)m[k].correct++; else m[k].wrong++;
+    if(r.ev_value_bet){m[k].ev_bets++;if(r.ev_correct)m[k].ev_correct++;}
+  });
+
+  // Per-match accuracy: was consensus scoreline correct?
+  const consAccuracy={correct:0,total:0,resultCorrect:0};
+  CONSENSUS.forEach(c=>{
+    const actual=actualByMatch[c.match_id];
+    if(!actual)return;
+    consAccuracy.total++;
+    if(c.consensus_home_goals===actual.actual_home&&c.consensus_away_goals===actual.actual_away)consAccuracy.correct++;
+    // Check if consensus result direction matches
+    const consResult=c.consensus_home_goals>c.consensus_away_goals?'home_win':c.consensus_home_goals<c.consensus_away_goals?'away_win':'draw';
+    if(consResult===actual.actual_outcome)consAccuracy.resultCorrect++;
+  });
+
+  const rows=Object.entries(m).map(([k,d])=>{
+    // Cost per model from FORECASTS (authoritative — available before scoring)
+    const fcost=FORECASTS.filter(f=>f.model_short===k).reduce((a,f)=>a+(f.cost_usd||0),0);
+    const cost=fcost||d.cost;
+    return{
+      model:k,pts:d.pts,n:d.n,
+      exact_pct:d.n?+(d.exact/d.n*100).toFixed(1):0,
+      correct_pct:d.n?+(d.correct/d.n*100).toFixed(1):0,
+      brier:d.bn?+(d.bsum/d.bn).toFixed(4):null,
+      ev_rate:d.ev_bets?+(d.ev_correct/d.ev_bets*100).toFixed(0):null,
+      ev_bets:d.ev_bets,cost,
+      ppd:cost&&d.pts?+(d.pts/cost).toFixed(1):null,
+      by_bd:d.by_breakdown,
+    };
+  }).sort((a,b)=>b.pts-a.pts);
+
+  // Consensus summary box
+  let html=`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+<div class="kpi"><div class="kpi-label">Consensus Exact Score</div><div class="kpi-value o">${consAccuracy.correct}/${consAccuracy.total}</div></div>
+<div class="kpi"><div class="kpi-label">Consensus Result Correct</div><div class="kpi-value b">${consAccuracy.resultCorrect}/${consAccuracy.total}</div></div>
+<div class="kpi"><div class="kpi-label">EV Bet Hit Rate</div><div class="kpi-value g" id="ev-hit-rate">—</div></div>
+</div>`;
+
+  // EV hit rate across all models
+  let totalEvBets=0,totalEvCorrect=0;
+  rows.forEach(r=>{totalEvBets+=r.ev_bets;totalEvCorrect+=r.ev_rate!==null?Math.round(r.ev_bets*r.ev_rate/100):0;});
+  setTimeout(()=>{
+    const el2=document.getElementById('ev-hit-rate');
+    if(el2)el2.textContent=totalEvBets?Math.round(totalEvCorrect/totalEvBets*100)+'%':'—';
+  },0);
+
+  // Breakdown stacked bar chart per model
+  html+=`<p class="note" style="margin-bottom:10px">Score breakdown by model.
+<span class="pts4">⭐ exact</span> &nbsp;
+<span class="pts2">GD correct</span> &nbsp;
+<span class="pts1">result correct</span> &nbsp;
+<span style="color:#d29922">draw correct</span> &nbsp;
+<span class="pts0">wrong</span>
+</p>`;
+
+  html+=`<table class="tbl"><thead><tr>
+<th>Model</th><th>Pts</th><th>Matches</th>
+<th>Exact%</th><th>Result%</th><th>Brier↓</th>
+<th>EV Bets</th><th>EV Hit%</th>
+<th>Cost $</th><th>Pts/$</th>
+<th style="min-width:200px">Breakdown</th>
+</tr></thead><tbody>`;
+
+  rows.forEach(r=>{
+    const total=r.n||1;
+    const w={
+      exact:   Math.round(r.by_bd.exact_score/total*100),
+      gd:      Math.round(r.by_bd.correct_result_exact_gd/total*100),
+      result:  Math.round((r.by_bd.correct_result+r.by_bd.correct_draw)/total*100),
+      wrong:   Math.round(r.by_bd.wrong_result/total*100),
+    };
+    const bar=`<div style="display:flex;height:10px;border-radius:3px;overflow:hidden;min-width:160px">
+<div style="width:${w.exact}%;background:#3fb950" title="Exact: ${r.by_bd.exact_score}"></div>
+<div style="width:${w.gd}%;background:#58a6ff" title="GD: ${r.by_bd.correct_result_exact_gd}"></div>
+<div style="width:${w.result}%;background:#d29922" title="Result: ${r.by_bd.correct_result+r.by_bd.correct_draw}"></div>
+<div style="width:${w.wrong}%;background:#21262d" title="Wrong: ${r.by_bd.wrong_result}"></div>
+</div>
+<div style="font-size:.7em;color:#6e7681;margin-top:2px">${r.by_bd.exact_score} exact · ${r.by_bd.correct_result_exact_gd} GD · ${r.by_bd.correct_result+r.by_bd.correct_draw} result · ${r.by_bd.wrong_result} wrong</div>`;
+
+    html+=`<tr>
+<td class="model-nm">${r.model}</td>
+<td class="pts4"><strong>${r.pts}</strong></td>
+<td>${r.n}</td>
+<td>${r.exact_pct}%</td>
+<td>${r.correct_pct}%</td>
+<td>${r.brier??'—'}</td>
+<td>${r.ev_bets}</td>
+<td>${r.ev_rate!==null?r.ev_rate+'%':'—'}</td>
+<td style="color:#8b949e">$${r.cost.toFixed(4)}</td>
+<td>${r.ppd!==null?`<span class="ev-p">${r.ppd}</span>`:'—'}</td>
+<td>${bar}</td>
+</tr>`;
+  });
+  html+='</tbody></table>';
+
+  // Calibration section: by outcome
+  if(SCORED.length>0){
+    html+=`<h3 style="color:#79c0ff;font-size:.95em;margin:20px 0 8px;border-top:1px solid #21262d;padding-top:16px">Probability Calibration by Outcome</h3>
+<p class="note" style="margin-bottom:8px">How confident were models when they were right vs wrong?</p>
+<table class="tbl"><thead><tr><th>Model</th><th>Avg prob when RIGHT</th><th>Avg prob when WRONG</th><th>Confidence gap↑</th></tr></thead><tbody>`;
+    rows.forEach(r=>{
+      const recs=SCORED.filter(s=>s.model_short===r.model);
+      const rightProbs=[], wrongProbs=[];
+      recs.forEach(s=>{
+        const actual=s.actual_outcome;
+        const prob=actual==='home_win'?s.home_win_prob:actual==='draw'?s.draw_prob:s.away_win_prob;
+        if(prob==null)return;
+        if((s.points||0)>0)rightProbs.push(prob); else wrongProbs.push(prob);
+      });
+      const avgRight=rightProbs.length?rightProbs.reduce((a,b)=>a+b,0)/rightProbs.length:null;
+      const avgWrong=wrongProbs.length?wrongProbs.reduce((a,b)=>a+b,0)/wrongProbs.length:null;
+      const gap=avgRight!=null&&avgWrong!=null?avgRight-avgWrong:null;
+      html+=`<tr><td class="model-nm">${r.model}</td>
+<td class="pts4">${avgRight!=null?pct(avgRight):'—'}</td>
+<td class="pts0">${avgWrong!=null?pct(avgWrong):'—'}</td>
+<td>${gap!=null?`<span class="${gap>0?'ev-p':'ev-n'}">${gap>0?'+':''}${pct(gap)}</span>`:'—'}</td></tr>`;
+    });
+    html+='</tbody></table>';
+  }
+
+  el.innerHTML=html;
+})();
+
+// ── Bonus Questions tab ──────────────────────────────────────────────
+(()=>{
+  const el=document.getElementById('bonus');
+  const ORDER=['first_goal_team','most_goals_team','tournament_winner','total_red_cards','penalty_shootout_games','total_goals','final_goals'];
+  const LABELS={
+    first_goal_team:'Which team will score the first goal?',
+    most_goals_team:'Which team will score the most goals? (excl. penalty shootout)',
+    tournament_winner:'Which team will win the tournament?',
+    total_red_cards:'How many red cards in total? (yellow-red counts as red)',
+    penalty_shootout_games:'How many games decided by penalty shootout?',
+    total_goals:'How many goals in total? (excl. penalty shootout)',
+    final_goals:'How many goals in the final match?',
+  };
+  const byId={};
+  BONUS.forEach(b=>byId[b.question_id]=b);
+
+  if(!BONUS.length){
+    el.innerHTML='<p style="padding:24px;color:#8b949e">Bonus forecasts not yet generated.</p>';
+    return;
+  }
+
+  const PROOF_URL='https://pages.github.tools.sap/I846720/WCFCST/';
+  const deadlines={
+    first_goal_team:'Thu Jun 11, 11:00',
+    most_goals_team:'Wed Jun 24, 11:00',
+    tournament_winner:'Wed Jun 24, 11:00',
+    total_red_cards:'Sat Jul 04, 09:00',
+    penalty_shootout_games:'Sat Jul 04, 09:00',
+    total_goals:'Sat Jul 04, 09:00',
+    final_goals:'Sat Jul 04, 09:00',
+  };
+
+  let html=`<div style="max-width:860px">
+<div style="padding:0 0 16px;color:#8b949e;font-size:.85em">
+  LLM consensus across ${BONUS[0]?.model_count||'—'} models · Generated ${BONUS[0]?.forecast_date||''} ·
+  <a href="${PROOF_URL}" style="color:#58a6ff">${PROOF_URL}</a>
+</div>`;
+
+  ORDER.forEach(qid=>{
+    const b=byId[qid];
+    if(!b)return;
+    const ans=b.consensus_answer;
+    const ansDisplay=(b.answer_type==='team_name')?`${flag(ans)} ${ans}`:ans;
+    const votes=(b.all_answers||[]);
+    const voteCount={};
+    votes.forEach(v=>{const k=String(v).trim();voteCount[k]=(voteCount[k]||0)+1;});
+    const sortedVotes=Object.entries(voteCount).sort((a,b2)=>b2[1]-a[1]);
+    const votePills=sortedVotes.map(([v,c])=>{
+      const winner=String(v).trim()===String(ans).trim();
+      return`<span style="background:${winner?'#1a4d2e':'#21262d'};color:${winner?'#3fb950':'#8b949e'};border-radius:4px;padding:2px 8px;font-size:.78em;font-weight:${winner?700:400}">${b.answer_type==='team_name'?flag(v)+' ':''} ${v} (${c})</span>`;
+    }).join(' ');
+
+    html+=`<div style="background:#161b22;border:1px solid #21262d;border-radius:8px;margin-bottom:10px;padding:16px 20px;cursor:pointer;transition:border-color .15s" onclick="openBonusModal('${qid}')" onmouseenter="this.style.borderColor='#58a6ff'" onmouseleave="this.style.borderColor='#21262d'">
+  <div style="color:#d29922;font-size:.82em;margin-bottom:4px">⏰ Deadline: ${deadlines[qid]||''}</div>
+  <div style="font-size:1.0em;font-weight:600;color:#e6edf3;margin-bottom:8px">${LABELS[qid]||qid}</div>
+  <div style="font-size:2em;font-weight:700;color:#3fb950;margin:6px 0">${ansDisplay}</div>
+  <div style="color:#8b949e;font-size:.82em">Avg confidence: ${b.avg_confidence}% · ${b.model_count} models · $${b.total_cost_usd?.toFixed(4)||'0'} &nbsp;<span style="color:#58a6ff;font-size:.9em">▶ click for per-model detail</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px">${votePills}</div>
+</div>`;
+  });
+
+  html+='</div>';
+  el.innerHTML=html;
+})();
+
+// ── Model Accuracy tab ───────────────────────────────────────────────
+(()=>{
+  const el=document.getElementById('accuracy');
+  const stats=ACCURACY_STATS||{};
+  const modelStats=stats.model_stats||[];
+  const phaseStats=stats.phase_stats||{};
+  const versions=VERSION_HISTORY||[];
+
+  if(!modelStats.length){
+    el.innerHTML='<div class="empty">No scored matches yet — accuracy stats will appear once results are scored.</div>';
+    return;
+  }
+
+  // max pts for bar scaling
+  const maxPts=Math.max(...modelStats.map(m=>m.pts),1);
+  const maxBrier=Math.max(...modelStats.filter(m=>m.brier_avg!=null).map(m=>m.brier_avg),0.01);
+
+  // ── Model Leaderboard ─────────────────────────────────────────────
+  let html=`<div style="max-width:900px">
+<h3 style="color:#e6edf3;margin-bottom:12px;font-size:1em;font-weight:700">Model Leaderboard — ${modelStats[0]?.games||0} games scored</h3>
+<table class="tbl" style="margin-bottom:24px">
+<thead><tr>
+  <th>#</th><th>Model</th><th>Pts</th><th>Pts/G</th>
+  <th title="Exact score (4 pts)">Exact</th>
+  <th title="Correct result + exact goal diff (2 pts)">+GD</th>
+  <th title="Correct result only (1 pt)">Result</th>
+  <th title="Wrong (0 pts)">Zero</th>
+  <th title="Brier score — lower is better calibration">Brier ↓</th>
+</tr></thead><tbody>`;
+
+  modelStats.forEach((m,i)=>{
+    const brier=m.brier_avg!=null?m.brier_avg.toFixed(4):'—';
+    const brierColor=m.brier_avg==null?'#6e7681':m.brier_avg<0.45?'#3fb950':m.brier_avg<0.60?'#d29922':'#f85149';
+    const barW=Math.round((m.pts/maxPts)*120);
+    const isConsensus=m.is_consensus===true;
+    const rowStyle=isConsensus?'background:#0d2438;border-top:2px solid #1f6feb;border-bottom:2px solid #1f6feb;':'';
+    const rankCell=isConsensus?`<td style="color:#58a6ff;font-weight:700">★</td>`:`<td style="color:#6e7681">${i}</td>`;
+    const modelLabel=isConsensus?`<span class="model-nm" style="color:#58a6ff;font-weight:700">CONSENSUS ▲</span>`:`<span class="model-nm">${m.model}</span>`;
+    html+=`<tr style="${rowStyle}">
+  ${rankCell}
+  <td>${modelLabel}</td>
+  <td><div class="bar-wrap"><div class="pts-bar" style="width:${barW}px${isConsensus?';background:#1f6feb':''}"></div><span class="pts-val" style="${isConsensus?'color:#58a6ff;font-weight:700':''}">${m.pts}</span></div></td>
+  <td style="color:${isConsensus?'#58a6ff':'#8b949e'};${isConsensus?'font-weight:700':''}">${m.pts_per_game??'—'}</td>
+  <td class="pts4">${m.exact}</td>
+  <td class="pts2">${m.correct_gd}</td>
+  <td class="pts1">${m.correct_result}</td>
+  <td class="pts0">${m.zero}</td>
+  <td style="color:${brierColor};font-weight:600">${brier}</td>
+</tr>`;
+  });
+  html+='</tbody></table>';
+
+  // ── Phase Breakdown ───────────────────────────────────────────────
+  // collect all phases that appear
+  const phaseSet=new Set();
+  Object.values(phaseStats).forEach(arr=>arr.forEach(p=>phaseSet.add(p.phase)));
+  const phases=[...phaseSet].sort();
+
+  if(phases.length>1){
+    html+=`<h3 style="color:#e6edf3;margin-bottom:12px;font-size:1em;font-weight:700">Points by Phase</h3>
+<table class="tbl" style="margin-bottom:24px">
+<thead><tr><th>Model</th>`;
+    phases.forEach(ph=>{html+=`<th colspan="2">${ph.replace(/_/g,' ')}</th>`;});
+    html+='</tr><tr><th></th>';
+    phases.forEach(()=>{html+='<th style="color:#6e7681;font-size:.7em">Pts</th><th style="color:#6e7681;font-size:.7em">Brier</th>';});
+    html+='</tr></thead><tbody>';
+
+    modelStats.forEach(m=>{
+      html+=`<tr><td class="model-nm">${m.model}</td>`;
+      const phMap={};
+      (phaseStats[m.model]||[]).forEach(p=>{phMap[p.phase]=p;});
+      phases.forEach(ph=>{
+        const p=phMap[ph];
+        const b=p?.brier_avg!=null?p.brier_avg.toFixed(3):'—';
+        html+=`<td style="color:#3fb950">${p?.pts??'—'}</td><td style="color:#8b949e;font-size:.85em">${b}</td>`;
+      });
+      html+='</tr>';
+    });
+    html+='</tbody></table>';
+  }
+
+  // ── Calibration note ─────────────────────────────────────────────
+  html+=`<div style="background:#0d1117;border:1px solid #21262d;border-radius:6px;padding:10px 14px;margin-bottom:24px;font-size:.82em;color:#8b949e">
+  <strong style="color:#e6edf3">Brier score</strong> = sum of squared probability errors across 3 outcomes (lower is better, random=0.667, max=2.0).
+  Measures calibration quality: a model confident in the wrong outcome is penalised heavily.
+</div>`;
+
+  // ── Version History ───────────────────────────────────────────────
+  html+=`<h3 style="color:#e6edf3;margin-bottom:12px;font-size:1em;font-weight:700">Forecast Version History</h3>`;
+  if(!versions.length){
+    html+='<div class="empty" style="margin-bottom:16px">No archived versions yet — archive created on first --force re-run.</div>';
+  } else {
+    html+='<table class="tbl" style="margin-bottom:24px"><thead><tr><th>Version</th><th>Archived At (UTC)</th><th>Forecasts</th><th>Matches</th><th>Notes</th></tr></thead><tbody>';
+    versions.slice().reverse().forEach((v,i)=>{
+      const stamp=v.archived_at||v.version_id;
+      const ts=stamp.replace(/^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})$/,'$1-$2-$3 $4:$5');
+      const tag=i===0?`<span style="background:#1a4d2e;color:#3fb950;border-radius:3px;padding:1px 5px;font-size:.72em;font-weight:700;margin-left:6px">latest</span>`:'';
+      const notes=v.notes?`<span style="font-size:.82em;color:#8b949e">${v.notes}</span>`:'';
+      html+=`<tr><td style="color:#58a6ff;font-weight:600">v${versions.length-i}${tag}</td><td style="color:#8b949e">${ts}</td><td>${v.n_forecasts}</td><td>${v.n_matches}</td><td>${notes}</td></tr>`;
+    });
+    html+='</tbody></table>';
+  }
+
+  // ── Cross-Version Accuracy Comparison ───────────────────────────────────
+  const cv=(CROSS_VERSION||[]).filter(v=>v.matches>=5);
+  if(cv.length>=2){
+    html+=`<h3 style="color:#e6edf3;margin-bottom:12px;font-size:1em;font-weight:700">Version Accuracy Comparison (Consensus)</h3>`;
+    // Find best values for highlighting
+    const bestPG=Math.max(...cv.map(v=>v.pts_per_game));
+    const bestExact=Math.max(...cv.map(v=>v.exact_pct));
+    const bestDraw=Math.max(...cv.map(v=>v.draw_pred_pct));
+    const bestBrier=Math.min(...cv.map(v=>v.brier_mean));
+    const hi='background:#1a3a1a;color:#3fb950;';
+    html+='<table class="tbl" style="margin-bottom:24px"><thead><tr><th>Version</th><th>Matches</th><th>P/G</th><th>Exact%</th><th>Draw Pred%</th><th>Brier</th></tr></thead><tbody>';
+    cv.slice().reverse().forEach((v,i)=>{
+      const stamp=v.version_id;
+      const tag=i===0?`<span style="background:#1a4d2e;color:#3fb950;border-radius:3px;padding:1px 5px;font-size:.72em;font-weight:700;margin-left:6px">latest</span>`:'';
+      const pgStyle=v.pts_per_game===bestPG?hi:'';
+      const exStyle=v.exact_pct===bestExact?hi:'';
+      const drStyle=v.draw_pred_pct===bestDraw?hi:'';
+      const brStyle=v.brier_mean===bestBrier?hi:'';
+      html+=`<tr>
+        <td style="color:#58a6ff;font-weight:600">v${cv.length-i}${tag}</td>
+        <td>${v.matches}</td>
+        <td style="${pgStyle}">${v.pts_per_game}</td>
+        <td style="${exStyle}">${v.exact_pct}%</td>
+        <td style="${drStyle}">${v.draw_pred_pct}%</td>
+        <td style="${brStyle}">${v.brier_mean}</td>
+      </tr>`;
+    });
+    html+='</tbody></table>';
+    html+=`<div style="background:#0d1117;border:1px solid #21262d;border-radius:6px;padding:10px 14px;margin-bottom:24px;font-size:.82em;color:#8b949e">
+    <strong style="color:#e6edf3">P/G</strong> = consensus points per scored game (4=exact, 1=correct result). Higher is better.
+    <strong style="color:#e6edf3">Draw Pred%</strong> = % of games where draw had the highest predicted probability. Historical WC draw rate ~26%.
+    <strong style="color:#e6edf3">Brier</strong> = sum of squared probability errors across 3 outcomes (lower is better, random=0.667, max=2.0). Best values highlighted green.
+    </div>`;
+  }
+
+  const mb=MARKET_BENCHMARK||{};
+  if(mb.rows && mb.rows.length>=2){
+    const s=mb.summary||{};
+    const edge=s.avg_edge||0;
+    const edgeColor=edge>0?'#3fb950':'#f85149';
+    const edgeSign=edge>0?'+':'';
+    html+=`<h3 style="color:#e6edf3;margin-bottom:12px;font-size:1em;font-weight:700">Sharp Market Benchmark (vs Prediction Market)</h3>`;
+    html+=`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+      <div style="background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px 18px;min-width:130px">
+        <div style="font-size:.75em;color:#8b949e;margin-bottom:4px">Matches</div>
+        <div style="font-size:1.4em;font-weight:700;color:#e6edf3">${s.n_matches||0}</div>
+      </div>
+      <div style="background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px 18px;min-width:130px">
+        <div style="font-size:.75em;color:#8b949e;margin-bottom:4px">Model Brier</div>
+        <div style="font-size:1.4em;font-weight:700;color:#e6edf3">${(s.avg_model_brier||0).toFixed(4)}</div>
+      </div>
+      <div style="background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px 18px;min-width:130px">
+        <div style="font-size:.75em;color:#8b949e;margin-bottom:4px">Market Brier</div>
+        <div style="font-size:1.4em;font-weight:700;color:#e6edf3">${(s.avg_market_brier||0).toFixed(4)}</div>
+      </div>
+      <div style="background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px 18px;min-width:130px">
+        <div style="font-size:.75em;color:#8b949e;margin-bottom:4px">Avg Edge</div>
+        <div style="font-size:1.4em;font-weight:700;color:${edgeColor}">${edgeSign}${(edge).toFixed(4)}</div>
+      </div>
+      <div style="background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px 18px;min-width:130px">
+        <div style="font-size:.75em;color:#8b949e;margin-bottom:4px">Beats Market</div>
+        <div style="font-size:1.4em;font-weight:700;color:${edgeColor}">${s.matches_beat||0}/${(s.matches_beat||0)+(s.matches_lost||0)}</div>
+      </div>
+    </div>`;
+    html+='<table class="tbl" style="margin-bottom:16px"><thead><tr><th>Match</th><th>Outcome</th><th>Model Brier</th><th>Market Brier</th><th>Edge</th></tr></thead><tbody>';
+    mb.rows.forEach(r=>{
+      const e=r.edge;
+      const eCol=e>0?'color:#3fb950':'color:#f85149';
+      const eSign=e>0?'+':'';
+      html+=`<tr>
+        <td style="color:#c9d1d9;font-size:.88em">${r.match_id.replace(/_/g,' ')}</td>
+        <td style="color:#8b949e;font-size:.88em">${r.outcome.replace(/_/g,' ')}</td>
+        <td>${r.mdl_brier.toFixed(4)}</td>
+        <td>${r.mkt_brier.toFixed(4)}</td>
+        <td style="${eCol};font-weight:600">${eSign}${e.toFixed(4)}</td>
+      </tr>`;
+    });
+    html+='</tbody></table>';
+    html+=`<div style="background:#0d1117;border:1px solid #21262d;border-radius:6px;padding:10px 14px;margin-bottom:24px;font-size:.82em;color:#8b949e">
+    Market probabilities are vig-removed (normalised from prediction market best-ask prices). <strong style="color:#e6edf3">Edge = Market Brier - Model Brier</strong> (positive = model beats market).
+    Brier score measures probability calibration; lower is better.
+    </div>`;
+  }
+
+  html+='</div>';
+  el.innerHTML=html;
+})();
+</script>
+</body>
+</html>

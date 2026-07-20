@@ -1,0 +1,18 @@
+{
+  "weights": {
+    "gem25flash": 0.08553,
+    "gem25flashlite": 0.080487,
+    "gem25pro": 0.08734,
+    "gem31flashlite": 0.085014,
+    "gpt5": 0.083338,
+    "gpt54": 0.083402,
+    "haiku": 0.079769,
+    "opus": 0.082595,
+    "sonnet": 0.083968,
+    "gpt5mini": 0.082574,
+    "sonar": 0.086661,
+    "sonarpro": 0.079322
+  },
+  "n_records": 1071,
+  "min_matches_threshold": 10
+}

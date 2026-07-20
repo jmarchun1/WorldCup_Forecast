@@ -1,0 +1,31 @@
+# Secrets — never commit
+config.json
+config.json.bak
+*.pem
+.env
+*.key
+
+# Scratch files
+tmp_*.js
+tmp_*.py
+auto_score.log
+
+# Large data directories (data is embedded in docs/index.html)
+results/
+data/
+screenshots/
+report/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
